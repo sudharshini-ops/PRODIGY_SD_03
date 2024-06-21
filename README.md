@@ -6,8 +6,6 @@ This is a simple Contact Management System built with Python. The system allows 
 
 
 contacts = []
-
-
 def add_contact(name, phone, email):
     contact = {
         'name': name,
@@ -16,14 +14,12 @@ def add_contact(name, phone, email):
     }
     contacts.append(contact)
     print(f"Contact for {name} added.")
-
 def view_contacts():
     if not contacts:
         print("No contacts available.")
     else:
         for idx, contact in enumerate(contacts, start=1):
             print(f"{idx}. Name: {contact['name']}, Phone: {contact['phone']}, Email: {contact['email']}")
-
 def search_contact(name):
     found_contacts = [contact for contact in contacts if name.lower() in contact['name'].lower()]
     if not found_contacts:
@@ -31,7 +27,6 @@ def search_contact(name):
     else:
         for contact in found_contacts:
             print(f"Name: {contact['name']}, Phone: {contact['phone']}, Email: {contact['email']}")
-
 def delete_contact(name):
     global contacts
     new_contacts = [contact for contact in contacts if name.lower() not in contact['name'].lower()]
@@ -40,8 +35,6 @@ def delete_contact(name):
     else:
         contacts = new_contacts
         print(f"Contact(s) for {name} deleted.")
-
-
 def main():
     while True:
         print("\nContact Management System")
