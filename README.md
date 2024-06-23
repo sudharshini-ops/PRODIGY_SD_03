@@ -2,40 +2,82 @@
 #A Simple Contact Managment System
 This is a simple Contact Management System built with Python. The system allows users to add, view, search, and delete contacts, providing a user-friendly command-line interface for managing personal or professional contacts efficiently.
 
-# Contact Management System
+#Contact Management System
 
+import sqlite3
 
-contacts = []
+# Database file
+DATABASE = 'contacts.db'
+
+# Create table if it doesn't exist
+def create_table():
+    conn = sqlite3.connect(DATABASE)
+    cursor = conn.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS contacts (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            phone TEXT NOT NULL,
+            email TEXT NOT NULL
+        )
+    ''')
+    conn.commit()
+    conn.close()
+
+# Add a contact
 def add_contact(name, phone, email):
-    contact = {
-        'name': name,
-        'phone': phone,
-        'email': email
-    }
-    contacts.append(contact)
+    conn = sqlite3.connect(DATABASE)
+    cursor = conn.cursor()
+    cursor.execute('''
+        INSERT INTO contacts (name, phone, email)
+        VALUES (?, ?, ?)
+    ''', (name, phone, email))
+    conn.commit()
+    conn.close()
     print(f"Contact for {name} added.")
+
+# View all contacts
 def view_contacts():
+    conn = sqlite3.connect(DATABASE)
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM contacts')
+    contacts = cursor.fetchall()
+    conn.close()
     if not contacts:
         print("No contacts available.")
     else:
-        for idx, contact in enumerate(contacts, start=1):
-            print(f"{idx}. Name: {contact['name']}, Phone: {contact['phone']}, Email: {contact['email']}")
+        for contact in contacts:
+            print(f"ID: {contact[0]}, Name: {contact[1]}, Phone: {contact[2]}, Email: {contact[3]}")
+
+# Search for a contact by name
 def search_contact(name):
-    found_contacts = [contact for contact in contacts if name.lower() in contact['name'].lower()]
-    if not found_contacts:
+    conn = sqlite3.connect(DATABASE)
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM contacts WHERE name LIKE ?', ('%' + name + '%',))
+    contacts = cursor.fetchall()
+    conn.close()
+    if not contacts:
         print(f"No contacts found for {name}.")
     else:
-        for contact in found_contacts:
-            print(f"Name: {contact['name']}, Phone: {contact['phone']}, Email: {contact['email']}")
+        for contact in contacts:
+            print(f"ID: {contact[0]}, Name: {contact[1]}, Phone: {contact[2]}, Email: {contact[3]}")
+
+# Delete a contact by name
 def delete_contact(name):
-    global contacts
-    new_contacts = [contact for contact in contacts if name.lower() not in contact['name'].lower()]
-    if len(new_contacts) == len(contacts):
+    conn = sqlite3.connect(DATABASE)
+    cursor = conn.cursor()
+    cursor.execute('DELETE FROM contacts WHERE name LIKE ?', ('%' + name + '%',))
+    conn.commit()
+    deleted = cursor.rowcount
+    conn.close()
+    if deleted == 0:
         print(f"No contacts found for {name}.")
     else:
-        contacts = new_contacts
         print(f"Contact(s) for {name} deleted.")
+
+# Main program loop
 def main():
+    create_table()
     while True:
         print("\nContact Management System")
         print("1. Add Contact")
@@ -65,6 +107,12 @@ def main():
         else:
             print("Invalid choice. Please try again.")
 
+# Run the main program loop
 if __name__ == "__main__":
     main()
 
+
+
+    
+        
+        
